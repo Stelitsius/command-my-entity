@@ -1,0 +1,19 @@
+{
+    "actions": [
+        "align",
+        "warp",
+        "approach",
+        "dock",
+        "keep_at_range",
+        "lock_target",
+        "show_info",
+        "jump",
+        "mouse_options",
+        "mouse_select",
+        "mouse_move",
+        "mouse_drag",
+        "mouse_drop",
+        "orbit",
+        "screen_scan"
+    ]
+}
