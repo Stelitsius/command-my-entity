@@ -43,7 +43,8 @@ def get_game_action_entity(word_split):
         return False
     elif word_count == 2:
         try:  # find 1st word in the actions dictionary, 2nd word in the screen entities dictionary
-            return [voice_actions[word_split[0]], word_split[1]]
+            return [voice_actions[word_split[0]],
+                    ScreenScanner.screen_all_entities[word_split[1]]]
         except KeyError:
             return False
     elif word_count == 3:

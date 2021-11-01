@@ -53,7 +53,7 @@ while True:
             speech_item = command[1]
 
             try:
-                da_item = ScreenScanner.screen_all_entities[speech_item]
+                da_item = ScreenScanner.screen_all_entities[speech_item.entity_display_name]
             except KeyError:
                 da_item = ""
 

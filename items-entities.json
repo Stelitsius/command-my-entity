@@ -1,12 +1,12 @@
 {
+
   "keepstar": "station",
   "station": "station",
   "tatara": "station",
   "fortizar": "station",
   "athanor": "station",
-  "arkonor": "asteroid",
-  "bistot": "asteroid",
-  "crokite": "asteroid",
   "stargate": "gate",
-  "claim": "claim"
+  "claim": "claim",
+  "quit game": "quit game",
+  "weed game": "quit game"
 }
