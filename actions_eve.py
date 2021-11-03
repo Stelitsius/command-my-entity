@@ -103,6 +103,14 @@ def mouse_left_click():
     pyautogui.click()
 
 
+def scan_screen(screen_id=None):
+    if screen_id is None:
+        pass
+    else:
+        pass
+
+
+
 # pyautogui.moveTo(w / 2, h / 2)
 # pyautogui.moveRel(-20, -20, duration=0.2)
 # print(pyautogui.position().x)

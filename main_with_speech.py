@@ -1,6 +1,6 @@
 import speech_recognition as sr
 from functions import *
-import actions
+import actions_eve
 
 voice_text = ""
 rec = ""
@@ -97,11 +97,11 @@ while True:
 
             if da_item != "":
                 if da_action == "mouse_options":
-                    actions.mouse_options(da_item)
+                    actions_eve.mouse_options(da_item)
                 elif da_action == "align":
-                    actions.align(da_item)
+                    actions_eve.align(da_item)
                 elif da_action == "mouse_select":
-                    actions.mouse_select(da_item)
+                    actions_eve.mouse_select(da_item)
                 else:
                     print("No action interpreted!")
             else:

@@ -1,0 +1,5 @@
+{
+  "select, quit game": [["stop listening","" ]],
+  "options, station": [["scan screen", "space"], ["scan screen", "station options"]]
+
+}

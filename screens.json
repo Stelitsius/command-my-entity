@@ -1,0 +1,8 @@
+{
+  "space":  {"id": "overview.png", "test key": "test value"},
+  "station":  {"id": "undock.png", "test key": "test value"},
+  "login":  {"id": "redeem_items.png", "test key": "test value"},
+  "station options":  {"id": "new_eden.png", "test key": "test value"},
+  "escape menu":  {"id": "quit_game.png", "test key": "test value"},
+  "relic site":  {"id": "gift_slot.png", "test key": "test value"}
+}

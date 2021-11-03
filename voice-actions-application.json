@@ -1,10 +1,11 @@
 {
   "start listening": "start_listen",
   "listen": "start_listen",
-  "stop listening": "stop_listen",
   "start listen": "start_listen",
+  "stop listening": "stop_listen",
   "stop listen": "stop_listen",
-  "escape": "escape",
   "quit application": "quit_application",
-  "click": "mouse_left_click"
+  "click": "mouse_left_click",
+  "scan screen": "scan_screen",
+  "scam screen": "scan_screen"
 }

@@ -40,5 +40,6 @@
   "right click": "mouse_options",
   "auctions": "mouse_options",
   "actions": "mouse_options",
-  "options": "mouse_options"
+  "options": "mouse_options",
+  "escape": "escape"
 }

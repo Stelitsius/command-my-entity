@@ -1,11 +1,11 @@
-import pyautogui
-from cv2 import cv2
 from functions import *
 from speech import listen_and_process_mic
-import actions
+import actions_eve
+import json
 
 
 listening_game_commands = False
+screens = json.load(open("screens.json"))
 print("Speak 'start listening' when ready")
 print("Speak 'stop listening' when you want to pause")
 print("Speak 'quit application' when you want to quit")
@@ -28,12 +28,12 @@ while True:
     elif command == "start_listen":
         if not listening_game_commands:
             listening_game_commands = True
-            ScreenScanner().scan_screen("dynamic_entities")
+            ScreenScanner().scan_screen()
             print("Listening to game commands...")
     elif command == "escape":
-        actions.escape()
+        actions_eve.escape()
     elif command == "mouse_left_click":
-        actions.mouse_left_click()
+        actions_eve.mouse_left_click()
     elif not command and listening_game_commands is True:
         # make a dictionary with all screen items
 
@@ -52,20 +52,27 @@ while True:
             da_action = command[0]
             speech_item = command[1]
 
-            try:
-                da_item = ScreenScanner.screen_all_entities[speech_item.entity_display_name]
-            except KeyError:
-                da_item = ""
-
-            if da_item != "":
-                if da_action == "mouse_options":
-                    actions.mouse_options(da_item)
-                elif da_action == "align":
-
-                    actions.align(da_item)
-                elif da_action == "mouse_select":
-                    actions.mouse_select(da_item)
-                else:
-                    print("No action interpreted!")
+            if da_action == "":
+                print("No action interpreted!")
             else:
-                print("No screen item interpreted!")
+                try:
+                    # try to find the item inside screen entities
+                    da_item = ScreenScanner.screen_all_entities[speech_item.entity_display_name]
+                    if da_action == "mouse_options":
+                        actions_eve.mouse_options(da_item)
+                    elif da_action == "align":
+                        actions_eve.align(da_item)
+                    elif da_action == "mouse_select":
+                        actions_eve.mouse_select(da_item)
+                except KeyError:
+                    try:
+                        # try to find the item inside screens
+                        da_item = screens[speech_item]
+                    except KeyError:
+                        da_item = None
+
+                    if da_action == "scan_screen":
+                        ScreenScanner().scan_screen(da_item)
+
+                    elif da_action != "scan_screen":
+                        print("No screen item interpreted!")

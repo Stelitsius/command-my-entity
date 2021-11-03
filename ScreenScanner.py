@@ -16,6 +16,8 @@ class ScreenScanner:
     screen_dynamic_entities = {}
     screen_all_entities = {}
     entities_attributes = json.load(open("entities.json"))  # dictionary with all entities sum initialized to 0
+    current_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    current_path = current_path + "\\image-items\\"
     np_screen_shot = None
     screen_shot = None
     template_pixels = None
@@ -51,10 +53,8 @@ class ScreenScanner:
                                    stack_item[1],
                                    stack_item[2],
                                    stack_item[3])
-            if dictionary_type == "static_entities":
-                cls.screen_static_entities[entity_display_name] = temp_item
-            elif dictionary_type == "dynamic_entities":
-                cls.screen_dynamic_entities[entity_display_name] = temp_item
+
+            cls.screen_dynamic_entities[entity_display_name] = temp_item
 
     @classmethod
     def scan_for_item(cls, image_template):
@@ -87,54 +87,71 @@ class ScreenScanner:
         return result_list
 
     @classmethod
-    def scan_screen(cls, items_path):
-        """:parameter items_path: a string of the path"""
-
-        # get application path
-        current_path = os.path.dirname(os.path.realpath(sys.argv[0]))
-        # get application requested template path
-        current_path = current_path + "\\image-items\\"
-        template_path = current_path + items_path
-        # get all files in template path
-        template_files = (f for f in os.listdir(template_path) if isfile(join(template_path, f)))
-
-        # get dictionary with all items-entities relation
-        items_entities = json.load(open("items-entities.json"))
-
-        # we reset the relevant dictionary
-        if items_path == "dynamic_entities":
-            cls.screen_dynamic_entities.clear()
-        elif items_path == "static_entities":
-            cls.screen_static_entities.clear()
-        # get screenshot of main monitor
-        cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
-        cls.BGR_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2BGR)
-        cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
-        cls.blur_gray_shot = cv2.blur(cls.GRAY_shot, (7, 7))
-
-        # cls.np_screen_shot = np.array(cls.screen_shot)[:, :, :3]
-        cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
-
-        # for each image in template path
-        for template_image in template_files:
-            # get rid of the file extension
-            item_name = os.path.splitext(template_image)[0]
-            cls.template_pixels = cv2.imread(template_path + "\\" + template_image, cv2.IMREAD_GRAYSCALE)
+    def search_for_current_screen(cls):
+        screens = json.load(open("screens.json"))
+        for screen_key in screens:
+            screen_id = screens[screen_key]["id"]
+            template_path = cls.current_path + screen_key + "\\" + screen_id
+            cls.template_pixels = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+            cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
+            cls.BGR_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2BGR)
+            cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
+            cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
             # get the entity base name corresponding to the current image
-            entity_name = items_entities[item_name]
             # scan for current image
-            screen_items = cls.scan_for_item(cls.template_pixels)
+            current_screen = cls.scan_for_item(cls.template_pixels)
+            if len(current_screen) >= 1:
+                return screen_key
 
-            cls.add_stack_in_dictionary(item_name=item_name,
-                                        entity_name=entity_name,
-                                        stack_collection=screen_items,
-                                        dictionary_type=items_path)
+    @classmethod
+    def scan_screen(cls, screen_id=None):
+        if screen_id is None:
+            screen_id = cls.search_for_current_screen()
 
-        cls.screen_all_entities = {**cls.screen_dynamic_entities, **cls.screen_static_entities}
-        # this line can be user option to run
-        # cls.trim_dictionary(cls.screen_all_entities)
-        cls.draw_entities(cls.screen_all_entities)
-        print(f"found: {len(cls.screen_all_entities)}")
+        if screen_id is None:
+            print(f"No screen found: {screen_id}")
+        else:
+            template_path = cls.current_path + screen_id
+            # get all files in template path
+            template_files = (f for f in os.listdir(template_path) if isfile(join(template_path, f)))
+
+            # get dictionary with all items-entities relation
+            items_entities = json.load(open("items-entities.json"))
+
+            # we reset the relevant dictionary
+
+            cls.screen_dynamic_entities.clear()
+
+            # get screenshot of main monitor
+            cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
+            cls.BGR_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2BGR)
+            cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
+            cls.blur_gray_shot = cv2.blur(cls.GRAY_shot, (7, 7))
+
+            # cls.np_screen_shot = np.array(cls.screen_shot)[:, :, :3]
+            cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
+
+            # for each image in template path
+            for template_image in template_files:
+                # get rid of the file extension
+                item_name = os.path.splitext(template_image)[0]
+                cls.template_pixels = cv2.imread(template_path + "\\" + template_image, cv2.IMREAD_GRAYSCALE)
+                # get the entity base name corresponding to the current image
+                entity_name = items_entities[item_name]
+                # scan for current image
+                screen_items = cls.scan_for_item(cls.template_pixels)
+
+                cls.add_stack_in_dictionary(item_name=item_name,
+                                            entity_name=entity_name,
+                                            stack_collection=screen_items,
+                                            dictionary_type=screen_id)
+
+            cls.screen_all_entities = {**cls.screen_dynamic_entities, **cls.screen_static_entities}
+            # this line can be user option to run
+            # cls.trim_dictionary(cls.screen_all_entities)
+            cls.draw_entities(cls.screen_all_entities)
+            print(f"found: {len(cls.screen_all_entities)}")
+
 
     @classmethod
     def draw_entities(cls, entities):

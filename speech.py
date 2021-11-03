@@ -40,5 +40,8 @@ def process_and_split_voice(voice_text):
     elif voice_split[-1] == "for":
         voice_split[-1] = "4"
 
+    if "weed" in voice_split:
+        voice_split[voice_split.index("weed")] = "quit"
+    if "quick" in voice_split:
+        voice_split[voice_split.index("quick")] = "quit"
     return voice_split
-
