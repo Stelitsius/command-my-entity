@@ -1,8 +1,8 @@
 {
-  "space":  {"id": "overview.png", "test key": "test value"},
-  "station":  {"id": "undock.png", "test key": "test value"},
-  "login":  {"id": "redeem_items.png", "test key": "test value"},
-  "station options":  {"id": "new_eden.png", "test key": "test value"},
-  "escape menu":  {"id": "quit_game.png", "test key": "test value"},
-  "relic site":  {"id": "gift_slot.png", "test key": "test value"}
+  "space":  {"id": "overview.png", "entities": "test value"},
+  "station":  {"id": "undock.png", "entities": "test value"},
+  "login screen":  {"id": "redeem items.png", "entities": "test value"},
+  "escape menu":  {"id": "quit game.png", "entities": "test value"},
+  "relic site":  {"id": "gift slot.png", "entities": "test value"},
+  "game launcher":  {"id": "launch account.png", "entities": "test value"}
 }

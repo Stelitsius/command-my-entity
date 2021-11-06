@@ -6,6 +6,7 @@ import json
 
 listening_game_commands = False
 screens = json.load(open("screens.json"))
+
 print("Speak 'start listening' when ready")
 print("Speak 'stop listening' when you want to pause")
 print("Speak 'quit application' when you want to quit")

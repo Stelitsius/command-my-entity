@@ -1,7 +1,0 @@
-{
-  "station":  {"total": 0, "is_multiple": true},
-  "overview":  {"total": 0, "is_multiple": false},
-  "gate":     {"total": 0, "is_multiple": true},
-  "claim":    {"total": 0, "is_multiple": false},
-  "quit game":{"total": 0, "is_multiple": false}
-}

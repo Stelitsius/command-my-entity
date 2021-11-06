@@ -10,12 +10,11 @@ import json
 
 
 class ScreenScanner:
-    MAX_WIDTH = 1920
-    MAX_HEIGHT = 1080
+    # MAX_WIDTH = 1920
+    # MAX_HEIGHT = 1080
     screen_static_entities = {}
     screen_dynamic_entities = {}
     screen_all_entities = {}
-    entities_attributes = json.load(open("entities.json"))  # dictionary with all entities sum initialized to 0
     current_path = os.path.dirname(os.path.realpath(sys.argv[0]))
     current_path = current_path + "\\image-items\\"
     np_screen_shot = None
@@ -24,17 +23,30 @@ class ScreenScanner:
     BGR_shot = None
     blur_gray_shot = None
     scanner = mss.mss()
+    items_entities = {}
+    entities_items = {}
+
+    def __init__(self):
+        self.populate_items_entities()
+
+    @classmethod
+    def populate_items_entities(cls):
+        cls.entities_items = json.load(open("entities-items.json"))
+        for entity in cls.entities_items:
+            cls.entities_items[entity]["total"] = 0
+            for item in cls.entities_items[entity]["items"]:
+                cls.items_entities[item] = entity
+        return
 
     @classmethod
     def trim_dictionary(cls, entities):
-        # this function will will remove the '1' suffix from all entities that have 1 instance
+        # this function will remove the '1' suffix from all entities that have 1 instance
         for entity in entities.copy().values():
             entity_base_name = entity.entity_name
-            entity_total = cls.entities_attributes[entity_base_name]["total"]
+            entity_total = cls.entities_items[entity_base_name]["total"]
             if entity_total == 1:
                 cls.screen_all_entities[entity_base_name] = cls.screen_all_entities.pop(entity.entity_display_name)
                 cls.screen_all_entities[entity_base_name].entity_display_name = entity_base_name
-
         return
 
     @classmethod
@@ -42,10 +54,10 @@ class ScreenScanner:
         # This function will add all instances of an item found in the relevant dictionary.
         for stack_item in stack_collection:
             entity_display_name = entity_name
-            if cls.entities_attributes[entity_name]["is_multiple"]:
-                entity_display_name += (" " + str(cls.entities_attributes[entity_name]["total"] + 1))
+            if cls.entities_items[entity_name]["is_multiple"]:
+                entity_display_name += (" " + str(cls.entities_items[entity_name]["total"] + 1))
 
-            cls.entities_attributes[entity_name]["total"] += 1
+            cls.entities_items[entity_name]["total"] += 1
             temp_item = ScreenItem(entity_name,
                                    entity_display_name,
                                    item_name,
@@ -55,6 +67,42 @@ class ScreenScanner:
                                    stack_item[3])
 
             cls.screen_dynamic_entities[entity_display_name] = temp_item
+
+    @classmethod
+    def scan_for_item_v2(cls, template_image, screen_shot_image, threshold=0.8, draw=False):
+
+        template_image_h = template_image.shape[0]
+        template_image_w = template_image.shape[1]
+        method = cv2.TM_CCOEFF_NORMED
+        match_result = cv2.matchTemplate(screen_shot_image, template_image, method)
+
+        locations = np.where(match_result >= threshold)
+
+        # [::-1] inverts the lists
+        # * unpacks the lists, instead of having a 2d array we will have 2x 1d arrays
+        # zip will make new lists by combining items of the same index
+        locations = list(zip(*locations[::-1]))  # !??!?
+        results = []
+        if len(locations):
+            results = list()
+
+            for loc in locations:
+                result = list()
+                result.append(loc[0] + (template_image_h // 2))
+                result.append(loc[1] + (template_image_w // 2))
+                result.append(template_image_h)
+                result.append(template_image_w)
+                results.append(result)
+                image_bottom_right = (loc[0] + template_image_h, loc[1] + template_image_w)
+
+                if draw:
+                    cv2.rectangle(screen_shot_image, loc, image_bottom_right,
+                                  color=(0, 255, 0), thickness=2, lineType=cv2.LINE_4)
+            if draw:
+                cv2.imshow("result", screen_shot_image)
+                cv2.waitKey()
+
+            return results
 
     @classmethod
     def scan_for_item(cls, image_template):
@@ -99,8 +147,10 @@ class ScreenScanner:
             cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
             # get the entity base name corresponding to the current image
             # scan for current image
-            current_screen = cls.scan_for_item(cls.template_pixels)
-            if len(current_screen) >= 1:
+            # current_screen = cls.scan_for_item(cls.template_pixels)
+            print(screen_id)
+            current_screen = cls.scan_for_item_v2(cls.template_pixels, cls.np_screen_shot, 0.8)
+            if current_screen is not None:
                 return screen_key
 
     @classmethod
@@ -114,12 +164,6 @@ class ScreenScanner:
             template_path = cls.current_path + screen_id
             # get all files in template path
             template_files = (f for f in os.listdir(template_path) if isfile(join(template_path, f)))
-
-            # get dictionary with all items-entities relation
-            items_entities = json.load(open("items-entities.json"))
-
-            # we reset the relevant dictionary
-
             cls.screen_dynamic_entities.clear()
 
             # get screenshot of main monitor
@@ -137,9 +181,10 @@ class ScreenScanner:
                 item_name = os.path.splitext(template_image)[0]
                 cls.template_pixels = cv2.imread(template_path + "\\" + template_image, cv2.IMREAD_GRAYSCALE)
                 # get the entity base name corresponding to the current image
-                entity_name = items_entities[item_name]
+                entity_name = cls.items_entities[item_name]
                 # scan for current image
-                screen_items = cls.scan_for_item(cls.template_pixels)
+                # screen_items = cls.scan_for_item(cls.template_pixels)
+                screen_items = cls.scan_for_item_v2(cls.template_pixels, cls.np_screen_shot, 0.8, False)
 
                 cls.add_stack_in_dictionary(item_name=item_name,
                                             entity_name=entity_name,
@@ -151,7 +196,6 @@ class ScreenScanner:
             # cls.trim_dictionary(cls.screen_all_entities)
             cls.draw_entities(cls.screen_all_entities)
             print(f"found: {len(cls.screen_all_entities)}")
-
 
     @classmethod
     def draw_entities(cls, entities):

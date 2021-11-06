@@ -1,0 +1,9 @@
+{
+  "station":        {"is_multiple": true, "items": ["keepstar", "station", "tatara", "fortizar", "athanor"]},
+  "overview":       {"is_multiple": false, "items": ["overview"]},
+  "gate":           {"is_multiple": true, "items": ["stargate"]},
+  "claim":          {"is_multiple": false, "items": ["claim"]},
+  "quit game":      {"is_multiple": false, "items": ["quit game"]},
+  "launch account": {"is_multiple": true, "items": ["launch account"]},
+  "redeem items":   {"is_multiple": false, "items": ["redeem items"]}
+}
