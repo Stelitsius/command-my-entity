@@ -1,0 +1,19 @@
+{
+  "align": ["align", "eyeline", "align to", "alliance",  "online", "a-line"],
+  "orbit": ["orbit"],
+  "warp": ["warp", "warp to", "work", "work to", "what"],
+  "approach": ["approach"],
+  "dock": ["dock","dock to", "dog", "dog to"],
+  "keep_at_range": ["keep distance",  "distance", "keep range", "keep at range", "range"],
+  "lock_target": ["lock", "target", "lock target", "look target", "look"],
+  "show_info": ["show info", "information"],
+  "jump": ["jump", "dump"],
+  "mouse_move": ["move", "mouse"],
+  "mouse_drag": ["drug", "doug", "drag"],
+  "mouse_drop": ["drop", "brook"],
+  "mouse_select": ["click", "select"],
+  "mouse_options": ["menu", "right click", "auctions", "actions", "options"],
+  "escape": ["escape", "escape menu"],
+  "scan_screen": ["look monitor", "luke monitor", "monitor",
+    "scan screen", "come screen", "screen", "skunk scream", "skunk screen", "sunscreen","scream"]
+}

@@ -1,8 +1,8 @@
 {
-  "space":  {"id": "overview.png", "entities": "test value"},
-  "station":  {"id": "undock.png", "entities": "test value"},
-  "login screen":  {"id": "redeem items.png", "entities": "test value"},
-  "escape menu":  {"id": "quit game.png", "entities": "test value"},
-  "relic site":  {"id": "gift slot.png", "entities": "test value"},
-  "game launcher":  {"id": "launch account.png", "entities": "test value"}
+  "space":  {"id": "overview.png", "is_full_screen": true},
+  "station":  {"id": "undock.png", "is_full_screen": true},
+  "login screen":  {"id": "redeem items.png","is_full_screen": true},
+  "escape menu":  {"id": "quit game.png","is_full_screen": true},
+  "relic site":  {"id": "gift slot.png","is_full_screen": false},
+  "game launcher":  {"id": "account.png", "is_full_screen": true}
 }

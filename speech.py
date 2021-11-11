@@ -15,7 +15,6 @@ def listen_to_mic():
                 r.adjust_for_ambient_noise(mic, duration=1)
                 audio = r.listen(mic)
                 text = r.recognize_google(audio)
-                # print(text)
                 return text
         except sr.UnknownValueError:
             r = sr.Recognizer()
@@ -45,3 +44,6 @@ def process_and_split_voice(voice_text):
     if "quick" in voice_split:
         voice_split[voice_split.index("quick")] = "quit"
     return voice_split
+
+
+

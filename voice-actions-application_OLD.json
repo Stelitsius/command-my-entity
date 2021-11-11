@@ -6,6 +6,6 @@
   "stop listen": "stop_listen",
   "quit application": "quit_application",
   "click": "mouse_left_click",
-  "scan screen": "scan_screen",
-  "scam screen": "scan_screen"
+  "display screens": "display_screens"
 }
+

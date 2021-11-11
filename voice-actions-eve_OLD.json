@@ -41,5 +41,12 @@
   "auctions": "mouse_options",
   "actions": "mouse_options",
   "options": "mouse_options",
-  "escape": "escape"
+  "escape menu": "escape",
+  "look monitor": "scan_screen",
+  "luke monitor": "scan_screen",
+  "screen": "scan_screen",
+  "scan screen": "scan_screen",
+  "come screen": "scan_screen",
+  "monitor": "scan_screen",
+  "scream": "scan_screen"
 }

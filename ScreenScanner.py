@@ -20,7 +20,7 @@ class ScreenScanner:
     np_screen_shot = None
     screen_shot = None
     template_pixels = None
-    BGR_shot = None
+    # BGR_shot = None
     blur_gray_shot = None
     scanner = mss.mss()
     items_entities = {}
@@ -31,6 +31,8 @@ class ScreenScanner:
 
     @classmethod
     def populate_items_entities(cls):
+        # initialize total quantity of all entities inside entities_items dictionary to 0
+        # derive items_entities dictionary from entities-items json
         cls.entities_items = json.load(open("entities-items.json"))
         for entity in cls.entities_items:
             cls.entities_items[entity]["total"] = 0
@@ -69,15 +71,14 @@ class ScreenScanner:
             cls.screen_dynamic_entities[entity_display_name] = temp_item
 
     @classmethod
-    def scan_for_item_v2(cls, template_image, screen_shot_image, threshold=0.8, draw=False):
+    def scan_for_item_v2(cls, template_image, screen_shot_image, threshold=0.95, draw=False):
 
         template_image_h = template_image.shape[0]
         template_image_w = template_image.shape[1]
         method = cv2.TM_CCOEFF_NORMED
         match_result = cv2.matchTemplate(screen_shot_image, template_image, method)
-
         locations = np.where(match_result >= threshold)
-
+        # min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(match_result)
         # [::-1] inverts the lists
         # * unpacks the lists, instead of having a 2d array we will have 2x 1d arrays
         # zip will make new lists by combining items of the same index
@@ -88,8 +89,8 @@ class ScreenScanner:
 
             for loc in locations:
                 result = list()
-                result.append(loc[0] + (template_image_h // 2))
-                result.append(loc[1] + (template_image_w // 2))
+                result.append(loc[0] + (template_image_w // 2))
+                result.append(loc[1] + (template_image_h // 2))
                 result.append(template_image_h)
                 result.append(template_image_w)
                 results.append(result)
@@ -136,45 +137,53 @@ class ScreenScanner:
 
     @classmethod
     def search_for_current_screen(cls):
+
         screens = json.load(open("screens.json"))
+        cls.take_screenshot()
         for screen_key in screens:
             screen_id = screens[screen_key]["id"]
             template_path = cls.current_path + screen_key + "\\" + screen_id
             cls.template_pixels = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
-            cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
-            cls.BGR_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2BGR)
-            cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
-            cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
+
+            # cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
+            # cls.BGR_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2BGR)
+            # cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
+            # cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
+
             # get the entity base name corresponding to the current image
             # scan for current image
             # current_screen = cls.scan_for_item(cls.template_pixels)
-            print(screen_id)
-            current_screen = cls.scan_for_item_v2(cls.template_pixels, cls.np_screen_shot, 0.8)
-            if current_screen is not None:
+
+            current_screen = cls.scan_for_item_v2(cls.template_pixels, cls.np_screen_shot, 0.95)
+            if current_screen:
+                print(f"screen located: {screen_key}")
                 return screen_key
+        if current_screen is None:
+            print(f"current screen is not defined within screens.json,"
+                  f" or anticipated screen id is not located in current screen!")
+            return None
+
+    @classmethod
+    def take_screenshot(cls):
+        cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
+        cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
+        cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
+        cls.blur_gray_shot = cv2.blur(cls.GRAY_shot, (7, 7))
+        return
 
     @classmethod
     def scan_screen(cls, screen_id=None):
         if screen_id is None:
             screen_id = cls.search_for_current_screen()
-
         if screen_id is None:
-            print(f"No screen found: {screen_id}")
-        else:
+            return None
+        if screen_id:
+
+            cls.take_screenshot()
             template_path = cls.current_path + screen_id
             # get all files in template path
             template_files = (f for f in os.listdir(template_path) if isfile(join(template_path, f)))
             cls.screen_dynamic_entities.clear()
-
-            # get screenshot of main monitor
-            cls.screen_shot = cls.scanner.grab(cls.scanner.monitors[0])
-            cls.BGR_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2BGR)
-            cls.GRAY_shot = cv2.cvtColor(np.array(cls.screen_shot), cv2.COLOR_BGRA2GRAY)
-            cls.blur_gray_shot = cv2.blur(cls.GRAY_shot, (7, 7))
-
-            # cls.np_screen_shot = np.array(cls.screen_shot)[:, :, :3]
-            cls.np_screen_shot = np.array(cls.GRAY_shot)[:, :]
-
             # for each image in template path
             for template_image in template_files:
                 # get rid of the file extension
@@ -184,18 +193,22 @@ class ScreenScanner:
                 entity_name = cls.items_entities[item_name]
                 # scan for current image
                 # screen_items = cls.scan_for_item(cls.template_pixels)
-                screen_items = cls.scan_for_item_v2(cls.template_pixels, cls.np_screen_shot, 0.8, False)
-
-                cls.add_stack_in_dictionary(item_name=item_name,
-                                            entity_name=entity_name,
-                                            stack_collection=screen_items,
-                                            dictionary_type=screen_id)
+                screen_items = cls.scan_for_item_v2(cls.template_pixels, cls.np_screen_shot, 0.99, False)
+                if screen_items:
+                    cls.add_stack_in_dictionary(item_name=item_name,
+                                                entity_name=entity_name,
+                                                stack_collection=screen_items,
+                                                dictionary_type=screen_id)
 
             cls.screen_all_entities = {**cls.screen_dynamic_entities, **cls.screen_static_entities}
             # this line can be user option to run
             # cls.trim_dictionary(cls.screen_all_entities)
-            cls.draw_entities(cls.screen_all_entities)
-            print(f"found: {len(cls.screen_all_entities)}")
+            if len(cls.screen_all_entities) > 0:
+                cls.draw_entities(cls.screen_all_entities)
+                print(f"found: {len(cls.screen_all_entities)} entities")
+                return True
+            else:
+                return None
 
     @classmethod
     def draw_entities(cls, entities):
@@ -213,7 +226,13 @@ class ScreenScanner:
 
         for entity in entities.values():
             left_offset = int(len(entity.entity_display_name) * 3)
+
             bottom_left = (entity.x_loc - (entity.width // 2) - left_offset, entity.y_loc + (entity.height // 2))
+
+            '''new_image = cv2.rectangle(new_image, (entity.x_loc - (entity.width // 2), entity.y_loc - entity.height // 2),
+                                      (entity.x_loc + entity.width // 2, entity.y_loc + entity.height // 2),
+                                      color=(0, 255, 0), thickness=-1, lineType=cv2.LINE_4)
+            '''
             new_image = cv2.putText(new_image, entity.entity_display_name,
                                     bottom_left,
                                     font,

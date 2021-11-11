@@ -1,0 +1,8 @@
+{
+  "start_listen": ["start listening","listen", "start listen"],
+  "stop_listen": ["stop listening", "stop listen"],
+  "quit_application": ["quit application"],
+  "mouse_left_click": ["click"],
+  "display_screens": ["display screens","show screens", "display screams","show screams"]
+}
+
