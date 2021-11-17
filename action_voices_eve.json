@@ -13,7 +13,6 @@
   "mouse_drop": ["drop", "brook"],
   "mouse_select": ["click", "select"],
   "mouse_options": ["menu", "right click", "auctions", "actions", "options"],
-  "escape": ["escape", "escape menu"],
-  "scan_screen": ["look monitor", "luke monitor", "monitor",
-    "scan screen", "come screen", "screen", "skunk scream", "skunk screen", "sunscreen","scream"]
+  "scan_screen": ["look monitor", "luke monitor", "monitor", "scan screen", "come screen", "screen", "skunk scream",
+               "skunk screen", "sunscreen","scream", "scum screen","scanning screen"]
 }

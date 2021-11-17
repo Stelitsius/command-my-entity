@@ -1,4 +1,38 @@
 '''
+action_voices_app(no_entity).json:
+    Description:
+    This json describes a set of application actions and the relative word/phrases that will trigger them
+    They don't require an entity to act upon or the entity is implied.
+
+    format:
+    key: [word/phrase list...]
+
+    Example:
+    "start_listening": ["listen", "start listening",...]
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+action_voices_eve.json:
+    Description:
+    This json describes a set of game (eve) actions and the relative word/phrases that will trigger them
+    These actions require an entity to act upon.
+
+    format:
+    key: [word/phrase list...]
+
+    Example:
+    "mouse_left_click": ["select", "left click",...]
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+action_voices_eve(no_action).json:
+    Description:
+    This json describes a set of game (eve) actions and the relative word/phrases that will trigger them
+    They don't require an entity to act upon or the entity is implied.
+
+    format:
+    key: [word/phrase list...]
+
+    Example:
+    "mouse_left_click": ["select", "left click",...]
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 screens.json:
     Description:
     I group the various game items (ex: claim button, redeem button etc) into their relevant 'screen' (ex: login screen)

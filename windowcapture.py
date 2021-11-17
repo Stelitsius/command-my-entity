@@ -92,6 +92,3 @@ class WindowCapture:
     def get_screen_position(self, pos):
         return (pos[0] + self.offset_x, pos[1] + self.offset_y)
 
-
-a = WindowCapture('Alarms & Clock')
-print(a.list_window_names())

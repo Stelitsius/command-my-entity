@@ -94,13 +94,22 @@ def jump(screen_item):
     pyautogui.keyUp('d')
 
 
-def escape():
+def escape(user_called=True):
     pyautogui.hotkey('esc')
-    print("Escaping...")
+    if user_called:
+        print("Escaping...")
 
 
 def mouse_left_click():
     pyautogui.click()
+
+
+def display_screens():
+    print("Available screens: = = = = = =")
+    screens = json.load(open("screens.json"))
+    for screen in screens:
+        print(screen)
+    print("= = = = = = = = = = = = = = = =")
 
 
 def scan_screen(screen_id=None):
